@@ -67,10 +67,11 @@ const CategoryStyled = styled.div`
 
 const CategoryTitle = styled.h2`
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     font-family: 'Arial, sans-serif';
     font-family: 'Roboto, sans-serif';
     color: #333;
+    font-size: 2rem;
 `;
 
 const CategoryList = styled.div`
