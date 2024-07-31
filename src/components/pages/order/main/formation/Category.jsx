@@ -1,66 +1,52 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
+import React, { useState } from 'react'
+import { useFetchCategories } from '../../../../../hooks/useFetchCategories.jsx'
+import { useFetchFormations } from '../../../../../hooks/useFetchFormations.jsx'
 import styled, { keyframes } from 'styled-components';
+import { CategoryItem } from './CategoryItem.jsx';
+import { FormationItem } from './FormationItem.jsx';
 
 export default function Category() {
     //state
-    const [categories, setCategories] = useState([]);
+    const { categories, loading: loadingCategories, errorMessage: categoriesError } = useFetchCategories();
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const [formations, setFormations] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const { formations, loading: loadingFormations, errorMessage: formationsError } = useFetchFormations(selectedCategory);
     
     //comportements
-    useEffect(() => {
-        // Fetch categories from Strapi
-        axios.get('http://localhost:1337/api/categories?populate=*')
-            .then(response => {
-                setCategories(response.data.data);
-            })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
-            });
-    }, []);
-    useEffect(() => {
-        if (selectedCategory) {
-            // Fetch formations based on selected category from Strapi
-            axios.get(`http://localhost:1337/api/formations?filters[category]=${selectedCategory}`)
-                .then(response => {
-                    setFormations(response.data.data);
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.error('Error fetching formations:', error);
-                    setLoading(false);
-                });
-        }
-    }, [selectedCategory]);
+    
     //affichage
   return (
     <CategoryStyled>
         <CategoryTitle>Choisissez une catégorie</CategoryTitle>
+        {categoriesError && (
+            <ErrorMessage>
+                {categoriesError} <button onClick={() => window.location.reload()}>Réessayer</button>
+            </ErrorMessage>
+        )}
         <CategoryList>
             {categories.map(({ id, attributes }) => (
                 <CategoryItem 
                     key={id} 
-                    onClick={() => setSelectedCategory(id)}
-                    $isSelected={ id === selectedCategory}
-                >
-                    {attributes.Name}
-                </CategoryItem>
+                    id={id}
+                    name={attributes.Name}
+                    isSelected={id === selectedCategory}
+                    onSelect={setSelectedCategory}
+                />
             ))}
-            </CategoryList>
-            {loading ? (
+        </CategoryList>
+        {loadingCategories || loadingFormations ? (
                 <LoadingSpinner />
             ) : (
                 <FormationList>
                     {formations.map(({ id, attributes }) => (
-                        <FormationItem key={id}>
-                            <h3>{attributes.title}</h3>
-                            <p>{attributes.description}</p>
-                        </FormationItem>
+                        <FormationItem 
+                            key={id}
+                            title={attributes.title}
+                            description={attributes.description}
+                        />
                     ))}
                 </FormationList>
-            )}
+        )}
+        {formationsError && <ErrorMessage>{formationsError}</ErrorMessage>}
     </CategoryStyled>
   )
 }
@@ -83,6 +69,7 @@ const CategoryTitle = styled.h2`
     text-align: center;
     margin-bottom: 1rem;
     font-family: 'Arial, sans-serif';
+    font-family: 'Roboto, sans-serif';
     color: #333;
 `;
 
@@ -93,52 +80,12 @@ const CategoryList = styled.div`
     gap: 1rem;
 `;
 
-const CategoryItem = styled.button`
-    padding: 0.5rem 1rem;
-    border: 2px solid #007BFF;
-    border-radius: 5px;
-    background-color: ${({ $isSelected }) => ($isSelected ? '#007BFF' : '#fff')};
-    color: ${({ $isSelected }) => ($isSelected ? '#fff' : '#007BFF')};
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s, transform 0.2s;
-
-    &:hover {
-        background-color: #007BFF;
-        color: #fff;
-        transform: translateY(-2px);
-    }
-`;
-
 const FormationList = styled.div`
     margin-top: 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-`;
-
-const FormationItem = styled.div`
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-
-    &:hover {
-        transform: translateY(-5px);
-    }
-
-    h3 {
-        margin: 0 0 0.5rem;
-        font-family: 'Arial, sans-serif';
-        color: #333;
-    }
-
-    p {
-        margin: 0;
-        font-family: 'Arial, sans-serif';
-        color: #666;
-    }
+    animation: ${fadeIn} 0.5s ease-in;
 `;
 
 const LoadingSpinner = styled.div`
@@ -147,11 +94,29 @@ const LoadingSpinner = styled.div`
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
     margin: 2rem auto;
 
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  button {
+    background: none;
+    border: none;
+    color: #007BFF;
+    cursor: pointer;
+    text-decoration: underline;
+  }
 `;
