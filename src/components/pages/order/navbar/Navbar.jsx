@@ -68,7 +68,7 @@ const NavbarContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1rem 2rem;
   max-width: 1200px;
   margin: auto;
 `;
