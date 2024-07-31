@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export default function Category() {
     //state
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [formations, setFormations] = useState([]);
+    const [loading, setLoading] = useState(false);
     
     //comportements
     useEffect(() => {
@@ -14,7 +15,6 @@ export default function Category() {
         axios.get('http://localhost:1337/api/categories?populate=*')
             .then(response => {
                 setCategories(response.data.data);
-                console.log(response.data)
             })
             .catch(error => {
                 console.error('Error fetching categories:', error);
@@ -26,10 +26,11 @@ export default function Category() {
             axios.get(`http://localhost:1337/api/formations?filters[category]=${selectedCategory}`)
                 .then(response => {
                     setFormations(response.data.data);
-                    console.log(response.data)
+                    setLoading(false);
                 })
                 .catch(error => {
                     console.error('Error fetching formations:', error);
+                    setLoading(false);
                 });
         }
     }, [selectedCategory]);
@@ -48,25 +49,41 @@ export default function Category() {
                 </CategoryItem>
             ))}
             </CategoryList>
-            <FormationList>
-                {formations.map(({ id, attributes }) => (
-                    <FormationItem key={id}>
-                        <h3>{attributes.title}</h3>
-                        <p>{attributes.description}</p>
-                    </FormationItem>
-                ))}
-            </FormationList>
+            {loading ? (
+                <LoadingSpinner />
+            ) : (
+                <FormationList>
+                    {formations.map(({ id, attributes }) => (
+                        <FormationItem key={id}>
+                            <h3>{attributes.title}</h3>
+                            <p>{attributes.description}</p>
+                        </FormationItem>
+                    ))}
+                </FormationList>
+            )}
     </CategoryStyled>
   )
 }
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
 const CategoryStyled = styled.div`
   padding: 2rem;
   background-color: #f9f9f9;
+  animation: ${fadeIn} 0.5s ease-in;
 `;
 
 const CategoryTitle = styled.h2`
     text-align: center;
     margin-bottom: 1rem;
+    font-family: 'Arial, sans-serif';
+    color: #333;
 `;
 
 const CategoryList = styled.div`
@@ -83,11 +100,12 @@ const CategoryItem = styled.button`
     background-color: ${({ $isSelected }) => ($isSelected ? '#007BFF' : '#fff')};
     color: ${({ $isSelected }) => ($isSelected ? '#fff' : '#007BFF')};
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
 
     &:hover {
         background-color: #007BFF;
         color: #fff;
+        transform: translateY(-2px);
     }
 `;
 
@@ -112,9 +130,28 @@ const FormationItem = styled.div`
 
     h3 {
         margin: 0 0 0.5rem;
+        font-family: 'Arial, sans-serif';
+        color: #333;
     }
 
     p {
         margin: 0;
+        font-family: 'Arial, sans-serif';
+        color: #666;
+    }
+`;
+
+const LoadingSpinner = styled.div`
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #007BFF;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 `;
