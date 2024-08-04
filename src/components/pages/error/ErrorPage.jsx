@@ -21,9 +21,10 @@ const ErrorPageStyled = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  //height: 100vh;
   background-color: #f9f9f9;
   text-align: center;
+  padding: 100px 0;
 
   .error-container {
     max-width: 600px;
