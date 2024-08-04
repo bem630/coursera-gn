@@ -1,7 +1,7 @@
 import React from 'react'
 import Banner from './Banner'
 import styled from 'styled-components';
-import Category from './formation/Category';
+import Category from './category/Category';
 import FeaturedCourses from './formation/FeaturedCourses';
 import Testimonials from './Testimonials';
 import PartnerLogos from './PartnerLogos';
@@ -9,6 +9,7 @@ import LatestBlogs from './LatestBlogs';
 import UpcomingEvents from './UpcomingEvents';
 import CallToAction from './CallToAction';
 import FAQSection from './FAQSection';
+import Services from './Services';
 
 export default function Home() {
   return (
@@ -16,8 +17,9 @@ export default function Home() {
         <Banner/>
         <Category/>
         <FeaturedCourses/>
+        <Services/>
         <Testimonials/>
-        <PartnerLogos/>
+        {/*<PartnerLogos/>*/}
         <LatestBlogs/>
         <UpcomingEvents/>
         <CallToAction/>
