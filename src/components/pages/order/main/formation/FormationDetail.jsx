@@ -3,11 +3,14 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import photo from '../../../../../assets/handsome-male-entrepreneur-using-laptop.jpg'
 import styled from 'styled-components';
+import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 
 export default function FormationDetail() {
     const { formationName } = useParams();
     const [formation, setFormation] = useState(null);
     const [error, setError] = useState(null);
+    const [expanded, setExpanded] = useState({}); // State pour gérer l'expansion des compétences
+    
 
     useEffect(() => {
         const fetchFormation = async () => {
@@ -29,8 +32,12 @@ export default function FormationDetail() {
 
   if (!formation) {
     return <div>Loading...</div>;
-}
-const skills = formation.attributes.skills;
+  }
+  const skills = formation.attributes.skills;
+  const toggleExpand = (index) => {
+    setExpanded((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
   return (
     <FormationDetailSyled className='formation-detail-container'>
       <div className='content-formation-detail'>
@@ -84,7 +91,7 @@ const FormationDetailSyled = styled.div`
         /*border: 1px solid blue;*/
         padding: 100px;
         margin-bottom: 60px;
-        margin-top: 80px;
+        margin-top: 70px;
         color: white;
         background-color: #000;
         background: radial-gradient(657px 657px at 2% 90%, #92b6fc 0, #dcf1f600 40%), radial-gradient(642px 642px at 82% 115%, #b4cdff 0, #dcf1f600 25%), linear-gradient(-73.25deg, #dcf2f7 7.43%, #9accd5 94.82%);
@@ -162,18 +169,18 @@ const FormationDetailSyled = styled.div`
         gap: 20px;
         .skill-block {
             flex: 1 1 calc(50% - 20px);
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-            &:hover {
+            //padding: 20px;
+            //border: 1px solid #ddd;
+            //border-radius: 10px;
+            //background-color: #f9f9f9;
+            //box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            //transition: transform 0.2s, box-shadow 0.2s;
+            /*&:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            }
+            }*/
             h5 {
-                margin: 0 0 10px;
+                margin: 0px;
                 font-size: 18px;
                 color: #444;
             }
